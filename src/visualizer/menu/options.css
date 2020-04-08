@@ -1,0 +1,15 @@
+.algoButton{
+    margin: 0px 10px 0px 10px;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: large;
+    color: white;
+    background-color:darkslategray;
+}
+/*Look at css buttons on Google to see more customizable stuff*/
+
+.options{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
