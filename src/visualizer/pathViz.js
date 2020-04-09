@@ -23,6 +23,9 @@ Functional component which displays the entire Path visualizer
     const [startCoords, setStartCoords] = useState([]);
     const [finishCoords, setFinishCoords] = useState([]);
 
+    //Track if mouse is currently pressed
+    const [isClicked, setisClicked] = useState(false);
+
 
     const createNode = (col, row) => {
         /*
@@ -104,12 +107,14 @@ Functional component which displays the entire Path visualizer
         */
        //Procedure very similar to updateStart() above
        //TODO: Refactor to combine with updateStart()
-        const updated_grid = grid.slice();
-        console.log(updated_grid)
-        const curr_node = updated_grid[row][col];
+        //const updated_grid = grid.slice();
+        const curr_node = grid[row][col];
         const new_node = {...curr_node, isFinish:!isFinishSet};
-        updated_grid[row][col] = new_node;
-        return updated_grid;
+        //updated_grid[row][col] = new_node;
+        //return updated_grid;
+        grid[row][col] = new_node;
+        setGrid(grid)
+        //return grid;
     }
 
     const updatePath = (path) => {
@@ -149,14 +154,16 @@ Functional component which displays the entire Path visualizer
         //If start is set but finish isn't, set finish
         else if (!isFinishSet){
             //Create new grid with updateFinish() method
-            let newGrid = updateFinish(row,col);
+            updateFinish(row, col);
+            //let newGrid = updateFinish(row,col);
             
             //Update state of grid, isFinishSet and instruction
-            setGrid(newGrid)
+            //setGrid(newGrid)
             setisFinishSet(true);
             setInstr("Walls");
             setFinishCoords([row,col]);
         }
+        setisClicked(false)
     }
 
     const handleReset = () => {
@@ -178,10 +185,36 @@ Functional component which displays the entire Path visualizer
     const handleAlgoStart = () => {
         const path = Dijkstra(grid, startCoords, finishCoords);
         let pathGrid = updatePath(path)
-        console.log(pathGrid)
         setGrid(pathGrid);
 
     }
+
+    const handleWallSet = (row, col) => {
+        setisClicked(true);
+        handleWallDrag(true,row,col)
+        
+    }
+
+    const handleWallDrag = (isClick, row, col) => {
+        //console.log(isClicked);
+        //console.log(instr);
+
+        if(isClick && instr === "Walls"){
+            console.log("if conditions mets")
+            const wallGrid = grid.slice();
+            const curr_node = wallGrid[row][col];
+            const new_node = {...curr_node, isWall:!curr_node.isWall};
+            //const new_node = {...curr_node, isWall:true};
+
+            wallGrid[row][col] = new_node;
+            setGrid(wallGrid);
+        }
+    }
+/*
+    const handleWallFinish = () => {
+        setisClicked(false);
+    }
+    */
     
     
     useEffect(() => {
@@ -220,7 +253,9 @@ Functional component which displays the entire Path visualizer
                                             isWall = {isWall}
                                             isPath = {isPath}
                                             isVisited = {isVisited}
-                                            onClick = {() => handleClick(row,col)}
+                                            onMouseDown = {() => handleWallSet(row,col)}
+                                            onMouseEnter = {() => handleWallDrag(isClicked,row,col)}
+                                            onMouseUp = {(row,col) => handleClick(row,col)}
                                         ></Node>
                                     </div>
                                 );

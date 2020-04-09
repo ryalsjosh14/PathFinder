@@ -1,7 +1,7 @@
 import React from 'react';
 import './node.css';
 
-export default function Node({ col, row, isFinish, isStart, isWall, isPath, isVisited, onClick }){
+export default function Node({ col, row, isFinish, isStart, isWall, isPath, isVisited, onClick, onMouseDown, onMouseEnter, onMouseUp }){
     /*
     Returns node component with corresponding properties
     Args:
@@ -19,7 +19,12 @@ export default function Node({ col, row, isFinish, isStart, isWall, isPath, isVi
 
     //Render node
     return(
-        <div className={nodeView} onClick={() => onClick(row,col)}></div>
+        <div 
+        className={nodeView} 
+        onMouseDown={() => onMouseDown(row,col)}
+        onMouseEnter={() => onMouseEnter(row,col)}
+        onMouseUp={() => onMouseUp(row,col)}>
+        </div>
     );
 
 }

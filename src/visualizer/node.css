@@ -18,6 +18,13 @@
     background-color: green;
 }
 
+.node-wall {
+    width: 20px;
+    height: 20px;
+    outline: 2px solid black;
+    background-color: gray;
+}
+
 .node-path {
     width: 20px;
     height: 20px;

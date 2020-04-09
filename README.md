@@ -4,7 +4,7 @@ This project implements Djikstra's algorithm on a 25x60 grid to find the shortes
 
 ### Inspiration
 
-The idea was inspired by Clement Mihailescu's Pathfinding Visualizer project [https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial].While the idea is the same, the implementation of the algorthm and visualizer is unique.
+The idea was inspired by Clement Mihailescu's Pathfinding Visualizer project [https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial]. While the idea is the same, the implementation of the algorthm and visualizer is unique.
 
 ### Future Goals
 

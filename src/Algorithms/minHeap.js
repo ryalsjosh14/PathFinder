@@ -21,7 +21,7 @@ export default class MinHeap{
         Returns:
         heapNode: a node object to be placed in the minheap
         */
-        let heapNode = [node, dist]
+        let heapNode = [node, dist];
         return heapNode
     }
 
@@ -104,20 +104,18 @@ export default class MinHeap{
             return null;
         }
         //get root node from heap array
-        //let root = this.heapArray.shift();
         let root = this.heapArray[0];
 
+        //Get last node in heap array and place it at the start of the array
         const lastNode = this.heapArray[this.size -1];
-
         this.heapArray[0] = lastNode;
 
      
 
         //Decrease size of heap by 1
         this.size -= 1;
-        //Call heapify() to ensure heap meets minheap conditions
+        //Call heapify() to re-organize array to fit minheap requirements
         this.heapify(0);
-        
         
         //Return the new root value
         return root;
@@ -127,16 +125,12 @@ export default class MinHeap{
 
         //Find location of given node in heap array
         let index = this.heapArray.findIndex((key) => key[0] === node);  
-        //console.log("Initial index" + index) 
 
         //Find index of parent using minheap property
         let parentIndex = Math.floor((index-1)/2);
 
-        //console.log("initial distance" + this.heapArray[index][1])
         //Update distance value of given node
         this.heapArray[index][1] = dist;
-        //console.log("new distance" + this.heapArray[index][1])
-
 
         //If the new value is less than its parent, continually swap with parent until heap-order consition is met
         while(index > 0 && this.heapArray[index][1] < this.heapArray[parentIndex][1]){
@@ -147,18 +141,14 @@ export default class MinHeap{
             //Set the index to the parent index to check for failed condition again at top of loop
             index = parentIndex;
             parentIndex = Math.floor((index-1)/2);
-        }
-        //console.log("new index" + index)
-        //alert("decrease key complete")
-    
+        }    
     }
 
-
+/*
     isInHeap(vertex){
-        /*
-        If the given vertex is in the heap, return true. False otherwise
-        */
-    
+        
+        //If the given vertex is in the heap, return true. False otherwise
+        
         if(this.pos(vertex) < this.size){
             return true;
         }
@@ -166,7 +156,7 @@ export default class MinHeap{
     }
 
 
-    /*
+    
     addNode(newNode){
 
     }

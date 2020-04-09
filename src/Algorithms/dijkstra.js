@@ -10,8 +10,6 @@ export function Dijkstra(grid, startCoords, finishCoords){
     const finishRow = finishCoords[0];
     const finishCol = finishCoords[1];
 
-   
-
     // Create instance of minheap 
     let heap = new MinHeap();
 
@@ -19,8 +17,8 @@ export function Dijkstra(grid, startCoords, finishCoords){
     let orderedVisitedNodes = [];
 
     //Get the node objects for the start node and end node
-    const startNode = grid[startRow][startCol];  //checked
-    //const finishNode = grid[finishRow][finishCol]; //checked
+    const startNode = grid[startRow][startCol];  
+
 
     //Create new heap Node for starting node(see attributes in minHeap class), and add this node to heap array with distance of 0
     const startHeapNode = heap.newHeapNode(startNode, 0);
@@ -105,8 +103,11 @@ function getNeighbors(grid, node){
     if (col>0) {neighbors.push(grid[row][col-1])};
     //console.log(neighbors)
     
+    //Remove neighbors which are walls
+    let filteredNeighbors = neighbors.filter(neighbor => !neighbor.isWall)
+
     //Return all neighbors that haven't already been visited
-    return neighbors.filter(neighbor => !neighbor.isVisited)
+    return filteredNeighbors.filter(neighbor => !neighbor.isVisited)
 }
 
 function backTrack(lastNode, startRow, startCol){
