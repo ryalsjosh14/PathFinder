@@ -5,6 +5,8 @@ import MinHeap from './minHeap'
 export function Dijkstra(grid, startCoords, finishCoords){
 
     //Decompose start and finish coordinates
+    console.log(startCoords)
+    console.log(finishCoords)
     const startRow = startCoords[0];
     const startCol = startCoords[1];
     const finishRow = finishCoords[0];
@@ -73,6 +75,7 @@ export function Dijkstra(grid, startCoords, finishCoords){
     }
     //Get last node visited (finish node)
     const lastNode = orderedVisitedNodes.pop();
+    console.log(orderedVisitedNodes)
     //Get shortest path from backTrack() function
     const shortestPath = backTrack(lastNode, startRow, startCol);
     //Once algorithm has finished, return shortest path from finish to start

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import Node from './Node';
+import React, { useState, useEffect, useCallback } from 'react';
+import Node from './GridNode';
 import './pathViz.css';
 import Options from './menu/options'
 import { Dijkstra } from '../Algorithms/dijkstra';
@@ -12,19 +12,17 @@ Functional component which displays the entire Path visualizer
 //Initialize various state variables to be updated
     const [grid, setGrid] = useState([]); //Grid to be displayed
 
-    //Signifies if the start and finish nodes have been assigned
-    const [isStartSet, setisStartSet] = useState(false); 
-    const [isFinishSet, setisFinishSet] = useState(false);
-
     //Tracks which instruction the next mouse click will perform
     const [instr, setInstr] = useState("Start Point")
 
     //Tracks start and finish coordinates
-    const [startCoords, setStartCoords] = useState([]);
+    const [startCoords, setStartCoords] = useState({});
     const [finishCoords, setFinishCoords] = useState([]);
 
     //Track if mouse is currently pressed
     const [isClicked, setisClicked] = useState(false);
+
+
 
 
     const createNode = (col, row) => {
@@ -74,49 +72,6 @@ Functional component which displays the entire Path visualizer
         return init_grid;
     };
 
-    const updateStart = (row,col) => {
-        /*
-        Updates the grid by activating the start node
-        Args:
-        row, col: ints: Dimensions of the start node
-        Returns:
-        updated_grid: The new grid with start node signified
-        */
-
-        //Get copy of the current grid array
-        const updated_grid = grid.slice();
-
-        //Get the current node at the given location
-        const curr_node = updated_grid[row][col];
-
-        //Toggle isStartset for the current node
-        const new_node = {...curr_node, isStart:!isStartSet};
-
-        //Assign this new node to the correct location
-        updated_grid[row][col] = new_node;
-        return updated_grid;
-    }
-
-    const updateFinish = (row, col) => {
-        /*
-        Updates the grid by activating the finish node
-        Args:
-        row, col: ints: Dimensions of the finish node
-        Returns:
-        updated_grid: The new grid with finish node signified
-        */
-       //Procedure very similar to updateStart() above
-       //TODO: Refactor to combine with updateStart()
-        //const updated_grid = grid.slice();
-        const curr_node = grid[row][col];
-        const new_node = {...curr_node, isFinish:!isFinishSet};
-        //updated_grid[row][col] = new_node;
-        //return updated_grid;
-        grid[row][col] = new_node;
-        setGrid(grid)
-        //return grid;
-    }
-
     const updatePath = (path) => {
 
         const new_grid = grid.slice();
@@ -127,44 +82,82 @@ Functional component which displays the entire Path visualizer
             pathNode.isPath = true
             new_grid[row][col] = pathNode;
         }
-        //console.log(new_grid)
         return(new_grid)
     }
 
+    const handleClick = useCallback(function handleClick(e){
 
-    const handleClick = (row, col) => {
         /*
         Updates the grid when a node is clicked based on the current state
         Args:
         row,col: int: coordinates of node which was clicked
         Returns: None
         */
-       //If start is not set, set start
-        if (!isStartSet) {
-            //Create new grid with updateStart() method
-            let newGrid = updateStart(row,col);
 
-            //Update state of grid, isStartSet and instruction
-            setGrid(newGrid);
-            setisStartSet(true);
-            setInstr("Finish Point");
-            setStartCoords([row,col]);
+        //Get coordinates of node clicked from event dataset
+       const row = e.currentTarget.dataset["row"];
+       const col = e.currentTarget.dataset["col"];
+          
+       //Execute code nested in setInstr in order to avoid handleClick updating and re-rendering all nodes
+        setInstr((prevInstr) => {
+            //If the previous instruction is start point
+            if (prevInstr === "Start Point") {
+                //Update grid with new start point
+                setGrid( (prevGrid) => {
+                    const updated_grid = prevGrid.slice();
+    
+                    //Get the current node at the given location
+                    const curr_node = updated_grid[row][col];
+    
+                    //Toggle isStartset for the current node
+                    const new_node = {...curr_node, isStart:true};
+    
+                    //Assign this new node to the correct location
+                    updated_grid[row][col] = new_node;
+                    return updated_grid
+                })
+                //Set start coords with position of current node
+                setStartCoords(() => {
+                    return [parseInt(row), parseInt(col)]
+                });
+                //Set state of mouse to not clicked
+                setisClicked(false)
+                //Update instruction to "finish point"
+                return ("Finish Point")
+            }
+            //If the start was already set
+            else if (prevInstr === "Finish Point"){
+                   
+                //Update state of grid, isClicked and finish coordinates
+                setGrid( (prevGrid) => {
+                    const updated_grid = prevGrid.slice();
+    
+                    //Get the current node at the given location
+                    const curr_node = updated_grid[row][col];
+    
+                    //Toggle isStartset for the current node
+                    const new_node = {...curr_node, isFinish:true};
+    
+                    //Assign this new node to the correct location
+                    updated_grid[row][col] = new_node;
+                    return updated_grid
+                })
+               //Set finish coords with coords of clicked node      
+                setFinishCoords(() => {
+                    return [parseInt(row), parseInt(col)]
+                });
+                //Set is clicked to false
+                setisClicked(false)
+                //Return new instruction as walls
+                return ("Walls")
 
-        } 
-        //If start is set but finish isn't, set finish
-        else if (!isFinishSet){
-            //Create new grid with updateFinish() method
-            updateFinish(row, col);
-            //let newGrid = updateFinish(row,col);
-            
-            //Update state of grid, isFinishSet and instruction
-            //setGrid(newGrid)
-            setisFinishSet(true);
-            setInstr("Walls");
-            setFinishCoords([row,col]);
-        }
-        setisClicked(false)
-    }
+            }
+            else{
+                setisClicked(false)
+                return prevInstr
+            }
+        })
+    }, [])
 
     const handleReset = () => {
         /*
@@ -177,46 +170,73 @@ Functional component which displays the entire Path visualizer
         //Update states accordingly
         setGrid(reset_grid);
         setInstr("Start Point")
-        setisFinishSet(false);
-        setisStartSet(false);
+        
         
     }
 
     const handleAlgoStart = () => {
+        /*
+        Start the algorithm and update the grid with the new path
+        */
         const path = Dijkstra(grid, startCoords, finishCoords);
         let pathGrid = updatePath(path)
         setGrid(pathGrid);
 
     }
 
-    const handleWallSet = (row, col) => {
-        setisClicked(true);
-        handleWallDrag(true,row,col)
+    const handleWallSet = useCallback( function handleWallSet(e){
+        //Set status of mouse click to true
+        setisClicked(() => {
+            return true
+        });
+        //Call handleWallDrag to ensure the initial clicked node also is set as wall
+        handleWallDrag(e)
         
-    }
+    },[])
 
-    const handleWallDrag = (isClick, row, col) => {
-        //console.log(isClicked);
-        //console.log(instr);
+    const handleWallDrag = useCallback( function handleWallDrag(e){
+        /*
+        Set walls on grid given the current state of the grid and mouse click
+        */
 
-        if(isClick && instr === "Walls"){
-            console.log("if conditions mets")
-            const wallGrid = grid.slice();
-            const curr_node = wallGrid[row][col];
-            const new_node = {...curr_node, isWall:!curr_node.isWall};
-            //const new_node = {...curr_node, isWall:true};
+        //Get coordinates of node entered with synthetic event
+        const row = e.currentTarget.dataset["row"];
+        const col = e.currentTarget.dataset["col"];
+        
+        //Nest all operations within setisClicked and setInstr in order to check those states
+        setisClicked( (prevClick) => {
+            //If the mouse is pressed
+            if (prevClick){
+                //Check if instruction is set to walls
+                setInstr( (prevInstr) => {
+                    if (prevInstr==="Walls"){
+                        //If walls are being set, set current node to a wall and update grid
+                        setGrid((prevGrid) => {
+                            const wallGrid = prevGrid.slice();
+                            const curr_node = wallGrid[row][col];
+                            const new_node = {...curr_node, isWall:true};
+                            wallGrid[row][col] = new_node;
+                            return wallGrid
+                        });
+                    }   
+                    //Return the same instruction as before, should only be reset with reset button                 
+                    return prevInstr
+                    
+                })
+                //Return mouse clicked as true
+                return true
+            }
+            //If mouse isn't pressed down, return previous instruction
+            else{
+                setInstr(prevInstr => {
+                    return prevInstr
+                })
+            }
+            //Always return mouse clicked as same value as previous state
+            return prevClick
+        })
+    }, []);
 
-            wallGrid[row][col] = new_node;
-            setGrid(wallGrid);
-        }
-    }
-/*
-    const handleWallFinish = () => {
-        setisClicked(false);
-    }
-    */
-    
-    
     useEffect(() => {
         /*
         Updates the grid at the initial DOM render
@@ -244,7 +264,7 @@ Functional component which displays the entire Path visualizer
                             {row.map( (node, nodeIndex) => {
                                 const {col, row, isFinish, isStart, isWall, isPath, isVisited} = node;
                                 return(
-                                    <div key={nodeIndex}>
+                                    <div key={nodeIndex} >
                                         <Node 
                                             col = {col}
                                             row = {row}
@@ -253,9 +273,9 @@ Functional component which displays the entire Path visualizer
                                             isWall = {isWall}
                                             isPath = {isPath}
                                             isVisited = {isVisited}
-                                            onMouseDown = {() => handleWallSet(row,col)}
-                                            onMouseEnter = {() => handleWallDrag(isClicked,row,col)}
-                                            onMouseUp = {(row,col) => handleClick(row,col)}
+                                            onMouseUp = {handleClick}
+                                            onMouseDown = {handleWallSet}
+                                            onMouseEnter = {handleWallDrag}
                                         ></Node>
                                     </div>
                                 );
