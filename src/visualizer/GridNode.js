@@ -1,7 +1,7 @@
 import React from 'react';
 import './node.css';
 
-function Node({ col, row, isFinish, isStart, isWall, isPath, isVisited, onMouseUp, onMouseEnter, onMouseDown }){
+function Node({ col, row, isFinish, isStart, isWall, isPath, toBeReset, onMouseUp, onMouseEnter, onMouseDown }){
     /*
     Returns node component with corresponding properties
     Args:
@@ -10,21 +10,17 @@ function Node({ col, row, isFinish, isStart, isWall, isPath, isVisited, onMouseU
     onClick, const: function to be called when node is clicked
     */
 
-
-
-
-    console.log("node rendered")
-
     //Set styling (Color) of node based on node type
     const nodeView = isFinish ? 'node-finish' 
     : isStart ? 'node-start' 
     : isWall ? 'node-wall' 
     : isPath ? 'node-path' 
-    : isVisited ? 'node-visited' : 'node'
+    : toBeReset ? 'node-temp' : 'node-plain'
 
     //Render node
     return(
-        <div className={nodeView}
+        <div id={`row-${row}col-${col}`}
+        className={nodeView}
         onMouseUp={onMouseUp}
         onMouseDown={onMouseDown}
         onMouseEnter={onMouseEnter}
@@ -36,20 +32,12 @@ function Node({ col, row, isFinish, isStart, isWall, isPath, isVisited, onMouseU
 }
 
 function areEqual(prevProps, nextProps){
+    //If no props have changed, prevent rendering of node
 
-    if (prevProps.row === nextProps.row && prevProps.col === nextProps.col && prevProps.isFinish === nextProps.isFinish &&prevProps.isStart === nextProps.isStart &&prevProps.isWall === nextProps.isWall &&prevProps.isPath === nextProps.isPath &&prevProps.isVisited === nextProps.isVisited && prevProps.onMouseUp===nextProps.onMouseUp && prevProps.onMouseEnter===nextProps.onMouseEnter && prevProps.onMouseDown===nextProps.onMouseDown){
+    if (prevProps.toBeReset === nextProps.toBeReset && prevProps.row === nextProps.row && prevProps.col === nextProps.col && prevProps.isFinish === nextProps.isFinish &&prevProps.isStart === nextProps.isStart &&prevProps.isWall === nextProps.isWall &&prevProps.isPath === nextProps.isPath && prevProps.onMouseUp===nextProps.onMouseUp && prevProps.onMouseEnter===nextProps.onMouseEnter && prevProps.onMouseDown===nextProps.onMouseDown){
         return true;
     }
     return false;
-    
-   /*
-    if (prevProps.row === nextProps.row && prevProps.col === nextProps.col && prevProps.isFinish.equals(nextProps.isFinish) && prevProps.isStart.equals(nextProps.isStart) &&prevProps.isWall.equals(nextProps.isWall) &&prevProps.isPath.equals(nextProps.isPath) &&prevProps.isVisited.equals(nextProps.isVisited)){
-        return true;
-    }
-    return false;
-    */
-
 }
 
 export default React.memo(Node, areEqual);
-//export default Node;

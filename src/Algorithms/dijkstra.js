@@ -79,7 +79,7 @@ export function Dijkstra(grid, startCoords, finishCoords){
     //Get shortest path from backTrack() function
     const shortestPath = backTrack(lastNode, startRow, startCol);
     //Once algorithm has finished, return shortest path from finish to start
-    return(shortestPath)   
+    return ([orderedVisitedNodes, shortestPath])   
     
 
 }
@@ -113,7 +113,7 @@ function getNeighbors(grid, node){
     return filteredNeighbors.filter(neighbor => !neighbor.isVisited)
 }
 
-function backTrack(lastNode, startRow, startCol){
+export function backTrack(lastNode, startRow, startCol){
     //Initialize shortest path as empty array
     const shortestPath = [];
 

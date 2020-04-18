@@ -22,9 +22,6 @@ Functional component which displays the entire Path visualizer
     //Track if mouse is currently pressed
     const [isClicked, setisClicked] = useState(false);
 
-
-
-
     const createNode = (col, row) => {
         /*
         Returns an object with the properties for a blank node
@@ -36,7 +33,7 @@ Functional component which displays the entire Path visualizer
             isStart: false, 
             isFinish: false, 
             isWall: false,
-            isVisited: false
+            toBeReset: false
             }
         )
     }
@@ -72,21 +69,7 @@ Functional component which displays the entire Path visualizer
         return init_grid;
     };
 
-    const updatePath = (path) => {
-
-        const new_grid = grid.slice();
-        for(let i = 0; i < path.length;i++){
-            const pathNode = path[i];
-            const row = pathNode.row;
-            const col = pathNode.col;
-            pathNode.isPath = true
-            new_grid[row][col] = pathNode;
-        }
-        return(new_grid)
-    }
-
     const handleClick = useCallback(function handleClick(e){
-
         /*
         Updates the grid when a node is clicked based on the current state
         Args:
@@ -150,7 +133,6 @@ Functional component which displays the entire Path visualizer
                 setisClicked(false)
                 //Return new instruction as walls
                 return ("Walls")
-
             }
             else{
                 setisClicked(false)
@@ -170,18 +152,61 @@ Functional component which displays the entire Path visualizer
         //Update states accordingly
         setGrid(reset_grid);
         setInstr("Start Point")
-        
-        
     }
 
     const handleAlgoStart = () => {
         /*
         Start the algorithm and update the grid with the new path
         */
-        const path = Dijkstra(grid, startCoords, finishCoords);
-        let pathGrid = updatePath(path)
-        setGrid(pathGrid);
+        const [visitedPath, path] = Dijkstra(grid, startCoords, finishCoords);
+        let new_grid = grid.slice();
+        //Update the each node visited by Djikstra's algorithm
+        for(let i = 1; i < visitedPath.length; i++){
+            const thisNode = visitedPath[i];
+            //Update each node with an asyncronous call every 10 ms (See updateVisited())
+            updateVisited(thisNode, i)
 
+            //Update new_grid, to be used to update state
+            const row = thisNode.row;
+            const col = thisNode.col;
+            let curr_node = new_grid[row][col]
+            const new_node = {...curr_node, toBeReset:!curr_node.toBeReset};
+            new_grid[row][col] = new_node
+        }
+
+        // Update the path as soon as the animation has finished
+        setTimeout( () => {
+            updatePath(path)
+        }, 10 * visitedPath.length, path)
+
+        //Update the grid, this takes place before most of the animations 
+        setGrid(new_grid)
+    }
+
+    const updatePath = (path) => {
+        //Update the path by creating a new grid and updating state
+        let new_grid = grid.slice();
+        for (let i = 0; i < path.length; i++){
+            const thisNode = path[i];
+            const row = thisNode.row;
+            const col = thisNode.col;
+            let curr_node = new_grid[row][col]
+            const new_node = {...curr_node, isPath:!curr_node.isPath};
+            new_grid[row][col] = new_node
+        }
+        setGrid(new_grid)
+    }      
+
+
+    const updateVisited = (pathNode, i) => {
+        //Animate visited nodes every 10 ms
+
+        const row = pathNode.row;
+        const col = pathNode.col;
+        
+        setTimeout( () => {
+            document.getElementById(`row-${row}col-${col}`).className='node-visited'
+        }, 10*i, row, col)  
     }
 
     const handleWallSet = useCallback( function handleWallSet(e){
@@ -191,7 +216,6 @@ Functional component which displays the entire Path visualizer
         });
         //Call handleWallDrag to ensure the initial clicked node also is set as wall
         handleWallDrag(e)
-        
     },[])
 
     const handleWallDrag = useCallback( function handleWallDrag(e){
@@ -221,7 +245,6 @@ Functional component which displays the entire Path visualizer
                     }   
                     //Return the same instruction as before, should only be reset with reset button                 
                     return prevInstr
-                    
                 })
                 //Return mouse clicked as true
                 return true
@@ -262,7 +285,7 @@ Functional component which displays the entire Path visualizer
                     return(
                         <div className="row" key={rowIndex}>
                             {row.map( (node, nodeIndex) => {
-                                const {col, row, isFinish, isStart, isWall, isPath, isVisited} = node;
+                                const {col, row, isFinish, isStart, isWall, isPath, isVisualized, toBeReset} = node;
                                 return(
                                     <div key={nodeIndex} >
                                         <Node 
@@ -272,7 +295,8 @@ Functional component which displays the entire Path visualizer
                                             isStart = {isStart}
                                             isWall = {isWall}
                                             isPath = {isPath}
-                                            isVisited = {isVisited}
+                                            toBeReset = {toBeReset}
+                                            isVisualized = {isVisualized}
                                             onMouseUp = {handleClick}
                                             onMouseDown = {handleWallSet}
                                             onMouseEnter = {handleWallDrag}
@@ -284,7 +308,6 @@ Functional component which displays the entire Path visualizer
                     );
                 }
             )}
-
             </div>
         </div>
     )

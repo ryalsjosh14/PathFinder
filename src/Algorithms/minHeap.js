@@ -4,7 +4,7 @@ export default class MinHeap{
     Defines object minHeap to be implemented in Djikstra's algorithm
     */
 
-    //Initialize size of heap, corresponding array and ??
+    //Initialize size of heap and corresponding array
     constructor(){
         this.heapArray = []; // hold nodes in list, each node is an object with props {vertex, distance}
         this.size = 0; //tracks the size of minheap (number of unvistied nodes remaining)
