@@ -12,7 +12,7 @@ export default function Options(){
                 Dijkstra's Algorithm
             </button>
             <button className="algoButton">
-                Algorithm #2
+                A * Search
             </button>
             <button className="algoButton">
                 Algorithm #3

@@ -3,6 +3,10 @@ import Node from './GridNode';
 import './pathViz.css';
 import Options from './menu/options'
 import { Dijkstra } from '../Algorithms/dijkstra';
+import aStar  from '../Algorithms/aStar';
+
+
+//TODO: Add functionality for user to choose algorithm
 
 export default function PathViz(){
 /*
@@ -33,6 +37,7 @@ Functional component which displays the entire Path visualizer
             isStart: false, 
             isFinish: false, 
             isWall: false,
+            //isVisited: false,
             toBeReset: false
             }
         )
@@ -158,7 +163,9 @@ Functional component which displays the entire Path visualizer
         /*
         Start the algorithm and update the grid with the new path
         */
-        const [visitedPath, path] = Dijkstra(grid, startCoords, finishCoords);
+        //const [visitedPath, path] = Dijkstra(grid, startCoords, finishCoords);
+        const [visitedPath, path] = aStar(grid, startCoords, finishCoords);
+
         let new_grid = grid.slice();
         //Update the each node visited by Djikstra's algorithm
         for(let i = 1; i < visitedPath.length; i++){
@@ -177,7 +184,7 @@ Functional component which displays the entire Path visualizer
         // Update the path as soon as the animation has finished
         setTimeout( () => {
             updatePath(path)
-        }, 10 * visitedPath.length, path)
+        }, 100 * visitedPath.length, path)
 
         //Update the grid, this takes place before most of the animations 
         setGrid(new_grid)
@@ -206,7 +213,7 @@ Functional component which displays the entire Path visualizer
         
         setTimeout( () => {
             document.getElementById(`row-${row}col-${col}`).className='node-visited'
-        }, 10*i, row, col)  
+        }, 100*i, row, col)  
     }
 
     const handleWallSet = useCallback( function handleWallSet(e){

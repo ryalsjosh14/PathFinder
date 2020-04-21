@@ -124,7 +124,8 @@ export default class MinHeap{
     decreaseKey(node, dist){
 
         //Find location of given node in heap array
-        let index = this.heapArray.findIndex((key) => key[0] === node);  
+        console.log(node)
+        let index = this.heapArray.findIndex((key) => (key[0].row === node.row && key[0].col === node.col));  
 
         //Find index of parent using minheap property
         let parentIndex = Math.floor((index-1)/2);
