@@ -1,46 +1,94 @@
 .node-plain {
     width: 20px;
     height: 20px;
-    outline: 2px solid black;
+    background-color:white;
+    outline: 0.5px solid black;
 }
 
 .node-finish {
     width: 20px;
     height: 20px;
-    outline: 2px solid black;
+    outline: 0.5px solid black;
     background-color: red;
+    animation: finish-flash 500ms backwards ease-out;
 }
 
 .node-start {
     width: 20px;
     height: 20px;
-    outline: 2px solid black;
+    outline: 1px solid black;
     background-color: green;
+    animation: start-flash 500ms backwards ease-out;
+    
 }
 
 .node-wall {
     width: 20px;
     height: 20px;
-    outline: 2px solid black;
+    outline: 0.5px solid black;
     background-color: gray;
+    animation: wall-set 300ms backwards
 }
 
 .node-path {
     width: 20px;
     height: 20px;
-    outline: 2px solid black;
+    outline: 1px solid black;
     background-color:blueviolet;
 }
 
 .node-temp {
     width: 20px;
     height: 20px;
-    outline: 2px solid black;
+    outline: 0.5px solid black;
+    background-color:white;
+
 }
 .node-visited {
     width: 20px;
     height: 20px;
-    outline: 2px solid black;
-    background-color:gold;
+    outline: 1px solid black;
+    background-color: gold;
+    animation-name: visited-animations;
+    animation-duration: 200ms;
+    animation-fill-mode: backwards;
 }
+
+@keyframes visited-animations{
+    from{ background: white;}
+    to{ 
+        background: gold;
+        transform: scale(1.2)
+        }
+}
+
+@keyframes start-flash{
+    from{ background: white;}
+    to{ 
+        background: green;
+        transform: scale(1.4) rotate(180deg)
+        }
+}
+
+@keyframes finish-flash{
+    from{ background: white;}
+    to{ 
+        background: red;
+        transform: scale(1.4) rotate(180deg)
+        }
+}
+
+@keyframes wall-set{
+    from{ background: white;}
+    to{
+        background: gray;
+        transform: scale(1.25);
+        }
+}
+
+@keyframes start-twist{
+    from{}
+    to{transform: rotate(180deg)}
+}
+
 

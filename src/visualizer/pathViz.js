@@ -7,6 +7,7 @@ import aStar  from '../Algorithms/aStar';
 
 
 //TODO: Add functionality for user to choose algorithm
+//TODO: edit readme and correct comment typos
 
 export default function PathViz(){
 /*
@@ -25,6 +26,14 @@ Functional component which displays the entire Path visualizer
 
     //Track if mouse is currently pressed
     const [isClicked, setisClicked] = useState(false);
+
+    //Track algorithm to be used
+    const [algo, setAlgo] = useState("Dijkstra")
+    const [slow, setSlow] = useState(false)
+
+    const [isFinding, setisFinding] = useState(false)
+    const [isReset, setisReset] = useState(true)
+
 
     const createNode = (col, row) => {
         /*
@@ -155,6 +164,7 @@ Functional component which displays the entire Path visualizer
         const reset_grid = gridInit(25,60);
 
         //Update states accordingly
+        setisReset(true)
         setGrid(reset_grid);
         setInstr("Start Point")
     }
@@ -164,14 +174,40 @@ Functional component which displays the entire Path visualizer
         Start the algorithm and update the grid with the new path
         */
         //const [visitedPath, path] = Dijkstra(grid, startCoords, finishCoords);
-        const [visitedPath, path] = aStar(grid, startCoords, finishCoords);
+
+        setisFinding(true)
+        setisReset(false)
+
+        let [visitedPath, path] = [[], []];
+        switch(algo){
+            case "Dijkstra":
+                [visitedPath, path] = Dijkstra(grid, startCoords, finishCoords);
+                break;
+            case "aStar":
+                [visitedPath, path] = aStar(grid, startCoords, finishCoords);
+                break;
+            default: [visitedPath, path] = aStar(grid, startCoords, finishCoords);
+
+        }
+
+        let speed = 15;
+        switch(slow){
+            case true:
+                speed = 100
+                break;
+            case false:
+                speed = 15
+                break;
+            default:
+                speed = 15;
+        }
 
         let new_grid = grid.slice();
         //Update the each node visited by Djikstra's algorithm
         for(let i = 1; i < visitedPath.length; i++){
             const thisNode = visitedPath[i];
             //Update each node with an asyncronous call every 10 ms (See updateVisited())
-            updateVisited(thisNode, i)
+            updateVisited(thisNode, i, speed)
 
             //Update new_grid, to be used to update state
             const row = thisNode.row;
@@ -181,10 +217,12 @@ Functional component which displays the entire Path visualizer
             new_grid[row][col] = new_node
         }
 
+
         // Update the path as soon as the animation has finished
         setTimeout( () => {
             updatePath(path)
-        }, 100 * visitedPath.length, path)
+            setisFinding(false)
+        }, speed * visitedPath.length, path)
 
         //Update the grid, this takes place before most of the animations 
         setGrid(new_grid)
@@ -205,7 +243,7 @@ Functional component which displays the entire Path visualizer
     }      
 
 
-    const updateVisited = (pathNode, i) => {
+    const updateVisited = (pathNode, i, speed) => {
         //Animate visited nodes every 10 ms
 
         const row = pathNode.row;
@@ -213,7 +251,7 @@ Functional component which displays the entire Path visualizer
         
         setTimeout( () => {
             document.getElementById(`row-${row}col-${col}`).className='node-visited'
-        }, 100*i, row, col)  
+        }, speed*i, row, col)  
     }
 
     const handleWallSet = useCallback( function handleWallSet(e){
@@ -278,44 +316,66 @@ Functional component which displays the entire Path visualizer
 
     //Component rendering
     return(
+        <div>
         <div className="menu">
-            <Options/>
-            <button className="reset" onClick={() => handleReset()}>
-                Reset
-            </button>
-            <button onClick={() => handleAlgoStart()}>
-                Start Dijkstra
-            </button>
-            <text className="instructions">Set {instr}</text>
-            <div className="grid">
-                {grid.map( (row, rowIndex) => {
-                    return(
-                        <div className="row" key={rowIndex}>
-                            {row.map( (node, nodeIndex) => {
-                                const {col, row, isFinish, isStart, isWall, isPath, isVisualized, toBeReset} = node;
-                                return(
-                                    <div key={nodeIndex} >
-                                        <Node 
-                                            col = {col}
-                                            row = {row}
-                                            isFinish = {isFinish}
-                                            isStart = {isStart}
-                                            isWall = {isWall}
-                                            isPath = {isPath}
-                                            toBeReset = {toBeReset}
-                                            isVisualized = {isVisualized}
-                                            onMouseUp = {handleClick}
-                                            onMouseDown = {handleWallSet}
-                                            onMouseEnter = {handleWallDrag}
-                                        ></Node>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    );
-                }
-            )}
+            <div className="options">
+                <button className="algoButton" onClick = {() => setAlgo("Dijkstra")}>
+                    Dijkstra's Algorithm
+                </button>
+                <button className="algoButton" onClick = {() => setAlgo("aStar")}>
+                    A * Search
+                </button>
             </div>
+                
+            
+        </div>
+
+
+        <div className="grid">
+            <text className="instructions">Set {instr}</text>
+
+
+            <div className="options">
+
+                <button className="reset" onClick={() => handleReset()} disabled={isFinding}>
+                        Reset
+                    </button>
+                <button className="start" onClick={() => handleAlgoStart()} disabled={(!isReset || instr ==="Start Point" || instr ==="Finish Point")}>
+                        Start {algo}
+                    </button>
+                <button className="reset" onClick={ () => setSlow(!slow)} disabled={isFinding}>
+                    Turn on {slow ? "fast" : "slow"} mode
+                </button>
+            </div>
+            
+            {grid.map( (row, rowIndex) => {
+                return(
+                    <div className="row" key={rowIndex}>
+                        {row.map( (node, nodeIndex) => {
+                            const {col, row, isFinish, isStart, isWall, isPath, isVisualized, toBeReset} = node;
+                            return(
+                                <div key={nodeIndex} >
+                                    <Node 
+                                        col = {col}
+                                        row = {row}
+                                        isFinish = {isFinish}
+                                        isStart = {isStart}
+                                        isWall = {isWall}
+                                        isPath = {isPath}
+                                        toBeReset = {toBeReset}
+                                        isVisualized = {isVisualized}
+                                        onMouseUp = {handleClick}
+                                        onMouseDown = {handleWallSet}
+                                        onMouseEnter = {handleWallDrag}
+                                    ></Node>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+            }
+        )}
+        </div>
         </div>
     )
 }

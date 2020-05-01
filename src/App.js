@@ -6,9 +6,6 @@ function App() {
 
   return (
     <div className="App">
-      <h1>
-        Path Finding Animation
-      </h1>
       <PathViz></PathViz>
     </div>
   ); 

@@ -1,14 +1,13 @@
 ## PathFinder
 
-This project implements Djikstra's algorithm on a 25x60 grid to find the shortest path between a designated start and end point. 
+This project implements popular pathfinding algorithms on a 25x60 grid to find the shortest path between a designated start and end point while avoiding barriers (walls). The path-finding process is animated to illustrate the logic embedded in each algorithm.
 
 ### Inspiration
 
-The idea was inspired by Clement Mihailescu's Pathfinding Visualizer project [https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial]. While the idea is the same, the implementation of the algorthm and visualizer is unique.
+I beleived this project would be a good way to practice efficient algorithm implementation while also boosting my web development skills. The idea was inspired by Clement Mihailescu's Pathfinding Visualizer project [https://github.com/clementmihailescu/Pathfinding-Visualizer]. While the idea is the same, the implementation of the algorthms and visualizer is unique.
+
 
 ### Future Goals
 
-This initial commit has just the barebones to find a shortest path (without walls) and display the path and nodes visited by the algorithm.
-
-The next thing to do is add walls and to incrementally display the visited nodes. 
+The next step for this project is to improve the appearance of the page. Once this is addressed, I hope to add one or two more algorithms to the pathfinder.
 

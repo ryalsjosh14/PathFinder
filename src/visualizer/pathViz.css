@@ -1,5 +1,8 @@
 .grid{
-    margin: 25px 0 50px 0;
+    padding: 25px 0 50px 0;
+    background: radial-gradient(gray, white);
+    outline: 10px wheat;
+
 }
 
 .row{
@@ -10,11 +13,15 @@
 
 .reset{
     margin: 10px 10px 10px 10px;
-    padding: 6px 14px;
-    width: 100px;
+    padding: 6px 24px;
+    border-radius: 12px;
+    width: 180px
 }
 
 .menu{
+    background: linear-gradient(blue, darkblue);
+    padding: 20px;
+    outline: 10px wheat;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -23,4 +30,30 @@
 .instructions{
     font-weight: bold;
     font-size: 32px;
+}
+
+.algoButton{
+    margin: 0px 10px 0px 10px;
+    padding: 12px 28px;
+    border-radius: 12px;
+    color: white;
+    background-color:darkslategray;
+}
+/*Look at css buttons on Google to see more customizable stuff*/
+
+.options{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.start{
+    font-family: inherit;
+    font-weight: bolder;
+    font-size: large;
+    margin: 10px 10px 10px 10px;
+    padding: 6px 24px;
+    border-radius: 12px;
+    width: 180px;
+    
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import './options.css'
 
-export default function Options(){
+export default function Options({ onClick }){
     /* 
     Returns functional React component which includes all of the Algorithm options
     */
@@ -20,7 +20,6 @@ export default function Options(){
             <button className="algoButton">
                 Algorithm #4            
             </button>
-
         </div>
     )
 
