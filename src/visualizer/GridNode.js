@@ -1,7 +1,7 @@
 import React from 'react';
 import './node.css';
 
-function Node({ col, row, isFinish, isStart, isWall, isPath, toBeReset, onMouseUp, onMouseEnter, onMouseDown }){
+function Node({ col, row, isFinish, isStart, isWall, isPath, toBeReset, onMouseUp, onMouseEnter, onMouseDown, isVisited }){
     /*
     Returns node component with corresponding properties
     Args:
@@ -15,6 +15,7 @@ function Node({ col, row, isFinish, isStart, isWall, isPath, toBeReset, onMouseU
     : isStart ? 'node-start' 
     : isWall ? 'node-wall' 
     : isPath ? 'node-path' 
+    : isVisited ? 'node-visited'
     : toBeReset ? 'node-temp' : 'node-plain'
 
     //Render node

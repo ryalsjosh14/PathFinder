@@ -1,6 +1,6 @@
 .grid{
     padding: 25px 0 50px 0;
-    background: radial-gradient(gray, white);
+    background: radial-gradient(lightgray, white);
     outline: 10px wheat;
 
 }
@@ -20,11 +20,23 @@
 
 .menu{
     background: linear-gradient(blue, darkblue);
-    padding: 20px;
-    outline: 10px wheat;
+    padding: 15px;
+    outline: 2px solid gray;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.legend{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+}
+.legendText{
+    padding-right: 20px;
+    padding-left: 5px;
 }
 
 .instructions{
@@ -34,13 +46,27 @@
 
 .algoButton{
     margin: 0px 10px 0px 10px;
-    padding: 12px 28px;
-    border-radius: 12px;
+    width: 150px;
+    height: 40px;
+    border-radius: 10px;
+    text-emphasis-color: red;
+    background-color: inherit;
     color: white;
-    background-color:darkslategray;
+    
 }
-/*Look at css buttons on Google to see more customizable stuff*/
 
+.legendNode{
+    background-color: gold;
+}
+
+.navbarText{
+    margin: 0px 10px 0px 10px;
+    font-size: large;
+    padding-top: 7px;
+    padding-left: 100px;
+    
+    color: white;
+}
 .options{
     display: flex;
     flex-direction: row;

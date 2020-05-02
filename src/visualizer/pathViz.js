@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Node from './GridNode';
 import './pathViz.css';
-import Options from './menu/options'
 import { Dijkstra } from '../Algorithms/dijkstra';
 import aStar  from '../Algorithms/aStar';
+import GridNode from './GridNode';
 
-
-//TODO: Add functionality for user to choose algorithm
-//TODO: edit readme and correct comment typos
 
 export default function PathViz(){
 /*
@@ -29,8 +26,11 @@ Functional component which displays the entire Path visualizer
 
     //Track algorithm to be used
     const [algo, setAlgo] = useState("Dijkstra")
-    const [slow, setSlow] = useState(false)
+    
+    //0: slow, 1:medium, 2: fast
+    const [speed, setSpeed] = useState(1)
 
+    //Track status of animation and board
     const [isFinding, setisFinding] = useState(false)
     const [isReset, setisReset] = useState(true)
 
@@ -46,7 +46,7 @@ Functional component which displays the entire Path visualizer
             isStart: false, 
             isFinish: false, 
             isWall: false,
-            //isVisited: false,
+            isVisited: false,
             toBeReset: false
             }
         )
@@ -190,16 +190,19 @@ Functional component which displays the entire Path visualizer
 
         }
 
-        let speed = 15;
-        switch(slow){
-            case true:
-                speed = 100
+        let animateTime = 15;
+        switch(speed){
+            case 0:
+                animateTime = 50
                 break;
-            case false:
-                speed = 15
+            case 1:
+                animateTime = 20
+                break;
+            case 2:
+                animateTime = 5
                 break;
             default:
-                speed = 15;
+                animateTime = 20;
         }
 
         let new_grid = grid.slice();
@@ -207,7 +210,7 @@ Functional component which displays the entire Path visualizer
         for(let i = 1; i < visitedPath.length; i++){
             const thisNode = visitedPath[i];
             //Update each node with an asyncronous call every 10 ms (See updateVisited())
-            updateVisited(thisNode, i, speed)
+            updateVisited(thisNode, i, animateTime)
 
             //Update new_grid, to be used to update state
             const row = thisNode.row;
@@ -222,7 +225,7 @@ Functional component which displays the entire Path visualizer
         setTimeout( () => {
             updatePath(path)
             setisFinding(false)
-        }, speed * visitedPath.length, path)
+        }, animateTime * visitedPath.length, path)
 
         //Update the grid, this takes place before most of the animations 
         setGrid(new_grid)
@@ -243,7 +246,7 @@ Functional component which displays the entire Path visualizer
     }      
 
 
-    const updateVisited = (pathNode, i, speed) => {
+    const updateVisited = (pathNode, i, animateTime) => {
         //Animate visited nodes every 10 ms
 
         const row = pathNode.row;
@@ -251,7 +254,7 @@ Functional component which displays the entire Path visualizer
         
         setTimeout( () => {
             document.getElementById(`row-${row}col-${col}`).className='node-visited'
-        }, speed*i, row, col)  
+        }, animateTime*i, row, col)  
     }
 
     const handleWallSet = useCallback( function handleWallSet(e){
@@ -319,12 +322,27 @@ Functional component which displays the entire Path visualizer
         <div>
         <div className="menu">
             <div className="options">
-                <button className="algoButton" onClick = {() => setAlgo("Dijkstra")}>
-                    Dijkstra's Algorithm
-                </button>
-                <button className="algoButton" onClick = {() => setAlgo("aStar")}>
-                    A * Search
-                </button>
+                <div className="options">
+                    <p className="navbarText">Algorithm:</p>
+                    <button className="algoButton" style={{fontWeight: algo === "Dijkstra" ? "bolder" : "inherit", background: algo === "Dijkstra" ? "blue": "inherit", fontSize: algo === "Dijkstra" ? "120%": "inherit"}} onClick = {() => setAlgo("Dijkstra")}>
+                        Dijkstra's 
+                    </button>
+                    <button className="algoButton" style={{fontWeight: algo === "aStar" ? "bolder" : "inherit", background: algo === "aStar" ? "blue": "inherit", fontSize: algo === "aStar" ? "120%": "inherit"}} onClick = {() => setAlgo("aStar")}>
+                        A * Search
+                    </button>
+                </div>
+                <div className="options">
+                    <p className="navbarText">Animation speed: </p>
+                    <button className="algoButton" style={{fontWeight: speed === 0 ? "bolder" : "inherit", background: speed === 0 ? "blue": "inherit", fontSize: speed === 0 ? "120%": "inherit"}} onClick={ () => setSpeed(0)} disabled={isFinding}>
+                        Slow
+                    </button>
+                    <button className="algoButton" style={{fontWeight: speed === 1 ? "bolder" : "inherit", background: speed === 1 ? "blue": "inherit", fontSize: speed === 1 ? "120%": "inherit"}} onClick={ () => setSpeed(1)} disabled={isFinding}>
+                        Medium
+                    </button>
+                    <button className="algoButton" style={{fontWeight: speed === 2 ? "bolder" : "inherit", background: speed === 2 ? "blue": "inherit", fontSize: speed === 2 ? "120%": "inherit"}} onClick={ () => setSpeed(2)} disabled={isFinding}>
+                        Fast
+                    </button>
+                </div>
             </div>
                 
             
@@ -343,10 +361,20 @@ Functional component which displays the entire Path visualizer
                 <button className="start" onClick={() => handleAlgoStart()} disabled={(!isReset || instr ==="Start Point" || instr ==="Finish Point")}>
                         Start {algo}
                     </button>
-                <button className="reset" onClick={ () => setSlow(!slow)} disabled={isFinding}>
-                    Turn on {slow ? "fast" : "slow"} mode
-                </button>
+                
             </div>
+            <div className="legend">
+            <GridNode isStart={true}></GridNode>
+            <p className="legendText">Start Point </p>
+            <GridNode isFinish={true}></GridNode>
+            <p className="legendText">Finish Point </p>
+            <GridNode isWall={true}></GridNode>
+            <p className="legendText">Wall </p>
+            <GridNode isVisited={true}></GridNode>
+            <p className="legendText">Visited </p>
+            <GridNode isPath={true}></GridNode>
+            <p className="legendText">Path </p>
+        </div>
             
             {grid.map( (row, rowIndex) => {
                 return(
@@ -375,6 +403,7 @@ Functional component which displays the entire Path visualizer
                 );
             }
         )}
+        
         </div>
         </div>
     )
